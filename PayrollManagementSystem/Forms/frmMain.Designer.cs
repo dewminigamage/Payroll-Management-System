@@ -12,6 +12,7 @@ partial class frmMain
     private System.Windows.Forms.Label lblSubtitle;
     private System.Windows.Forms.Label lblModulesHeading;
     private System.Windows.Forms.Button btnEmployeeManagement;
+    private System.Windows.Forms.Button btnAttendanceManagement;
     private System.Windows.Forms.Label lblFooter;
 
     protected override void Dispose(bool disposing)
@@ -30,6 +31,7 @@ partial class frmMain
         lblSubtitle = new Label();
         lblModulesHeading = new Label();
         btnEmployeeManagement = new Button();
+        btnAttendanceManagement = new Button();
         lblFooter = new Label();
 
         SuspendLayout();
@@ -75,6 +77,20 @@ partial class frmMain
         btnEmployeeManagement.Cursor = Cursors.Hand;
         btnEmployeeManagement.Click += new System.EventHandler(btnEmployeeManagement_Click);
 
+        // ── Attendance Management tile ─────────────────────────
+        btnAttendanceManagement.BackColor = Color.White;
+        btnAttendanceManagement.FlatAppearance.BorderColor = primaryBlue;
+        btnAttendanceManagement.FlatAppearance.BorderSize = 2;
+        btnAttendanceManagement.FlatStyle = FlatStyle.Flat;
+        btnAttendanceManagement.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnAttendanceManagement.ForeColor = primaryBlue;
+        btnAttendanceManagement.Location = new Point(255, 130);
+        btnAttendanceManagement.Size = new Size(210, 100);
+        btnAttendanceManagement.Text = "Attendance\r\nManagement";
+        btnAttendanceManagement.UseVisualStyleBackColor = false;
+        btnAttendanceManagement.Cursor = Cursors.Hand;
+        btnAttendanceManagement.Click += new System.EventHandler(btnAttendanceManagement_Click);
+
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize = false;
         lblFooter.Font = new Font("Segoe UI", 8F);
@@ -90,6 +106,7 @@ partial class frmMain
         BackColor = Color.FromArgb(245, 247, 250);
         ClientSize = new Size(820, 490);
         Controls.Add(lblFooter);
+        Controls.Add(btnAttendanceManagement);
         Controls.Add(btnEmployeeManagement);
         Controls.Add(lblModulesHeading);
         Controls.Add(pnlHeader);

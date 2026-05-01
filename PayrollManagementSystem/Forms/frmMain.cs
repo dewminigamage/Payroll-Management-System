@@ -14,4 +14,10 @@ public partial class frmMain : Form
         using var frm = new frmEmployee();
         frm.ShowDialog();
     }
+
+    private void btnAttendanceManagement_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmAttendance();
+        frm.ShowDialog();
+    }
 }
