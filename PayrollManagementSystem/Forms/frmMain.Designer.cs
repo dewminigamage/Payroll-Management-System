@@ -15,6 +15,8 @@ partial class frmMain
     private System.Windows.Forms.Button btnAttendanceManagement;
     private System.Windows.Forms.Button btnPayroll;
     private System.Windows.Forms.Button btnReports;
+    private System.Windows.Forms.Label lblWelcome;
+    private System.Windows.Forms.Button btnLogout;
     private System.Windows.Forms.Label lblFooter;
 
     protected override void Dispose(bool disposing)
@@ -36,7 +38,9 @@ partial class frmMain
         btnAttendanceManagement = new Button();
         btnPayroll = new Button();
         btnReports = new Button();
-        lblFooter = new Label();
+        lblWelcome = new Label();
+        btnLogout  = new Button();
+        lblFooter  = new Label();
 
         SuspendLayout();
         pnlHeader.SuspendLayout();
@@ -45,6 +49,8 @@ partial class frmMain
         pnlHeader.BackColor = primaryBlue;
         pnlHeader.Controls.Add(lblSubtitle);
         pnlHeader.Controls.Add(lblMainTitle);
+        pnlHeader.Controls.Add(lblWelcome);
+        pnlHeader.Controls.Add(btnLogout);
         pnlHeader.Dock = DockStyle.Top;
         pnlHeader.Size = new Size(820, 80);
 
@@ -59,6 +65,29 @@ partial class frmMain
         lblSubtitle.ForeColor = Color.FromArgb(200, 230, 255);
         lblSubtitle.Location = new Point(27, 48);
         lblSubtitle.Text = "Manage your workforce efficiently";
+
+        // ── Welcome label (top-right of header) ───────────────
+        lblWelcome.AutoSize  = false;
+        lblWelcome.Font      = new Font("Segoe UI", 9F);
+        lblWelcome.ForeColor = Color.FromArgb(200, 230, 255);
+        lblWelcome.Location  = new Point(490, 50);
+        lblWelcome.Size      = new Size(240, 18);
+        lblWelcome.Text      = "";
+        lblWelcome.TextAlign = ContentAlignment.MiddleRight;
+
+        // ── Logout button (top-right of header) ───────────────
+        btnLogout.BackColor                 = Color.FromArgb(0, 95, 185);
+        btnLogout.FlatAppearance.BorderColor = Color.FromArgb(180, 220, 255);
+        btnLogout.FlatAppearance.BorderSize = 1;
+        btnLogout.FlatStyle                 = FlatStyle.Flat;
+        btnLogout.Font                      = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        btnLogout.ForeColor                 = Color.White;
+        btnLogout.Location                  = new Point(715, 22);
+        btnLogout.Size                      = new Size(85, 28);
+        btnLogout.Text                      = "Sign Out";
+        btnLogout.UseVisualStyleBackColor   = false;
+        btnLogout.Cursor                    = Cursors.Hand;
+        btnLogout.Click += new System.EventHandler(btnLogout_Click);
 
         // ── Modules heading ────────────────────────────────────
         lblModulesHeading.AutoSize = true;
