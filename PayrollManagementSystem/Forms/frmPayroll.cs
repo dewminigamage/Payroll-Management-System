@@ -298,6 +298,18 @@ public partial class frmPayroll : Form
 
     // ── Filter ─────────────────────────────────────────────────────────────
 
+    private void btnPaySlip_Click(object sender, EventArgs e)
+    {
+        if (selectedPayrollID == 0)
+        {
+            MessageBox.Show("Please select a payroll record from the list first.", "No Selection",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        using var frm = new frmPaySlip(selectedPayrollID);
+        frm.ShowDialog();
+    }
+
     private void btnFilter_Click(object sender, EventArgs e)      => LoadPayroll();
     private void btnClearFilter_Click(object sender, EventArgs e)
     {

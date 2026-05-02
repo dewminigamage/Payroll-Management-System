@@ -63,6 +63,7 @@ partial class frmPayroll
     private Button       btnClearFilter;
     private DataGridView dgvPayroll;
     private Label        lblStatus;
+    private Button       btnPaySlip;
 
     private Label        lblFooter;
 
@@ -128,6 +129,7 @@ partial class frmPayroll
         btnClearFilter     = new Button();
         dgvPayroll         = new DataGridView();
         lblStatus          = new Label();
+        btnPaySlip         = new Button();
         lblFooter          = new Label();
 
         SuspendLayout();
@@ -316,7 +318,7 @@ partial class frmPayroll
             lblFilterMonth,    cmbFilterMonth,
             lblFilterYear,     nudFilterYear,
             btnFilter, btnClearFilter,
-            dgvPayroll, lblStatus })
+            dgvPayroll, lblStatus, btnPaySlip })
             pnlRight.Controls.Add(c);
 
         // Filter row
@@ -370,8 +372,12 @@ partial class frmPayroll
         lblStatus.AutoSize  = true;
         lblStatus.Font      = new Font("Segoe UI", 9F);
         lblStatus.ForeColor = Color.FromArgb(80, 80, 80);
-        lblStatus.Location  = new Point(10, 435);
+        lblStatus.Location  = new Point(10, 437);
         lblStatus.Text      = "Records: 0";
+
+        SetBtn(btnPaySlip, "View Pay Slip", 460, 430, 120, 26,
+            Color.FromArgb(0, 120, 212), Color.White);
+        btnPaySlip.Click += new EventHandler(btnPaySlip_Click);
 
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize  = false;
