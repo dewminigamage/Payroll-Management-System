@@ -59,25 +59,44 @@ public partial class frmBulkPayroll : Form
                 new SqlParameter("@Year",  year)
             ]);
 
+        // Pre-load OT amounts for this period
+        var otDt = DatabaseHelper.ExecuteQuery(
+            "SELECT EmployeeID, OTAmount FROM OvertimeRecords WHERE PayMonth=@Month AND PayYear=@Year",
+            [new SqlParameter("@Month", month), new SqlParameter("@Year", year)]);
+        var otAmounts = otDt.Rows.Cast<DataRow>()
+            .ToDictionary(r => Convert.ToInt32(r["EmployeeID"]), r => Convert.ToDecimal(r["OTAmount"]));
+
+        // Pre-load active loan installments
+        var loanDt = DatabaseHelper.ExecuteQuery(@"
+            SELECT EmployeeID, SUM(MonthlyInstallment) AS TotalInst
+            FROM   EmployeeLoans WHERE Status='Active'
+            GROUP  BY EmployeeID");
+        var loanAmounts = loanDt.Rows.Cast<DataRow>()
+            .ToDictionary(r => Convert.ToInt32(r["EmployeeID"]), r => Convert.ToDecimal(r["TotalInst"]));
+
         _table = BuildDataTable();
 
         foreach (DataRow src in dt.Rows)
         {
-            bool done  = Convert.ToInt32(src["AlreadyDone"]) == 1;
+            bool done     = Convert.ToInt32(src["AlreadyDone"]) == 1;
+            int empID     = Convert.ToInt32(src["EmployeeID"]);
             decimal basic = Convert.ToDecimal(src["BasicSalary"]);
-            decimal gross = basic;                             // Allowances default 0
+            decimal allow = otAmounts.GetValueOrDefault(empID, 0m);   // OT as allowance
+            decimal other = loanAmounts.GetValueOrDefault(empID, 0m); // loan installment
+            decimal gross = basic + allow;
             decimal epf   = Math.Round(gross * PayrollSettings.EpfRate, 2);
             decimal etf   = Math.Round(gross * PayrollSettings.EtfRate, 2);
-            decimal net   = gross - epf;
+            decimal tax   = PayrollSettings.CalculateTax(gross);      // auto-calculated
+            decimal net   = gross - epf - tax - other;
 
             _table.Rows.Add(
-                !done,                                         // Include (checked only if new)
-                Convert.ToInt32(src["EmployeeID"]),
+                !done,
+                empID,
                 src["FullName"].ToString(),
                 basic,
-                0m,                                            // Allowances
-                0m,                                            // Tax
-                0m,                                            // OtherDeductions
+                allow,    // Allowances (OT)
+                tax,      // Tax (auto from brackets)
+                other,    // Other Deductions (loan installments)
                 gross,
                 epf,
                 etf,
@@ -237,16 +256,17 @@ public partial class frmBulkPayroll : Form
     {
         decimal basic  = ToDecimal(r[ColBasic]);
         decimal allow  = ToDecimal(r[ColAllowances]);
-        decimal tax    = ToDecimal(r[ColTax]);
         decimal other  = ToDecimal(r[ColOtherDed]);
         decimal gross  = basic + allow;
         decimal epf    = Math.Round(gross * PayrollSettings.EpfRate, 2);
         decimal etf    = Math.Round(gross * PayrollSettings.EtfRate, 2);
+        decimal tax    = PayrollSettings.CalculateTax(gross);  // recalc from brackets
         decimal net    = gross - epf - tax - other;
 
         r[ColGross] = gross;
         r[ColEPF]   = epf;
         r[ColETF]   = etf;
+        r[ColTax]   = tax;
         r[ColNet]   = net;
     }
 

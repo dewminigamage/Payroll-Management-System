@@ -18,6 +18,9 @@ public partial class frmMain : Form
             btnBulkPayroll.Enabled = false;
             btnLeaveManagement.Enabled = false;
             btnSettings.Enabled = false;
+            btnOvertime.Enabled       = false;
+            btnLoanManagement.Enabled = false;
+            btnAIAssistant.Enabled    = false;
         }
     }
 
@@ -66,6 +69,24 @@ public partial class frmMain : Form
     private void btnSettings_Click(object sender, EventArgs e)
     {
         using var frm = new frmSettings();
+        frm.ShowDialog();
+    }
+
+    private void btnOvertime_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmOvertime();
+        frm.ShowDialog();
+    }
+
+    private void btnLoanManagement_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmLoanManagement();
+        frm.ShowDialog();
+    }
+
+    private void btnAIAssistant_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmAIAssistant();
         frm.ShowDialog();
     }
 

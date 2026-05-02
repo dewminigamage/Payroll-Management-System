@@ -44,6 +44,14 @@ partial class frmPayroll
     private Label        lblNetLbl;
     private Label        lblNetVal;
 
+    // OT hint
+    private Label        lblOTHint;
+    private Button       btnAddOT;
+
+    // Loan hint
+    private Label        lblLoanHint;
+    private Button       btnAddLoan;
+
     // Action buttons
     private Button       btnCalculate;
     private Button       btnSave;
@@ -113,6 +121,10 @@ partial class frmPayroll
         lblETFVal          = new Label();
         lblNetLbl          = new Label();
         lblNetVal          = new Label();
+        lblOTHint          = new Label();
+        btnAddOT           = new Button();
+        lblLoanHint        = new Label();
+        btnAddLoan         = new Button();
         btnCalculate       = new Button();
         btnSave            = new Button();
         btnUpdate          = new Button();
@@ -161,7 +173,7 @@ partial class frmPayroll
         pnlLeft.BackColor   = Color.White;
         pnlLeft.BorderStyle = BorderStyle.FixedSingle;
         pnlLeft.Location    = new Point(12, 90);
-        pnlLeft.Size        = new Size(392, 460);
+        pnlLeft.Size        = new Size(392, 530);
         foreach (Control c in new Control[] {
             lblPayrollID, txtPayrollID,
             lblEmployee, cmbEmployee,
@@ -172,6 +184,8 @@ partial class frmPayroll
             lblTax, txtTax,
             lblRemarks, txtRemarks,
             pnlSummary,
+            lblOTHint, btnAddOT,
+            lblLoanHint, btnAddLoan,
             btnCalculate, btnSave, btnUpdate, btnDelete, btnClear })
             pnlLeft.Controls.Add(c);
 
@@ -208,7 +222,8 @@ partial class frmPayroll
         cmbPayMonth.Items.AddRange(new object[] {
             "January","February","March","April","May","June",
             "July","August","September","October","November","December" });
-        cmbPayMonth.SelectedIndex = DateTime.Today.Month - 1;
+        cmbPayMonth.SelectedIndex  = DateTime.Today.Month - 1;
+        cmbPayMonth.SelectedIndexChanged += new EventHandler(cmbPayMonth_SelectedIndexChanged);
 
         SetLbl(lblPayYear, "Year", ix + 123, ly + 3);
         nudPayYear.Location      = new Point(ix + 158, ly);
@@ -217,6 +232,7 @@ partial class frmPayroll
         nudPayYear.Maximum       = 2099;
         nudPayYear.Value         = DateTime.Today.Year;
         nudPayYear.DecimalPlaces = 0;
+        nudPayYear.ValueChanged += new EventHandler(nudPayYear_ValueChanged);
 
         // Row 4 – Basic Salary (auto-filled, read-only)
         ly += rh + gap;
@@ -308,11 +324,39 @@ partial class frmPayroll
         btnDelete.Click    += new EventHandler(btnDelete_Click);
         btnClear.Click     += new EventHandler(btnClear_Click);
 
+        // OT hint row (below action buttons)
+        ly += 42;
+        lblOTHint.AutoSize  = true;
+        lblOTHint.Font      = new Font("Segoe UI", 8.5F);
+        lblOTHint.ForeColor = Color.FromArgb(0, 100, 0);
+        lblOTHint.Location  = new Point(lx, ly + 6);
+        lblOTHint.Text      = "Overtime (this period): —";
+
+        SetBtn(btnAddOT, "+ Add to Allowances", 200, ly, 145, 26,
+            Color.FromArgb(0, 100, 0), Color.White);
+        btnAddOT.Font    = new Font("Segoe UI", 8F, FontStyle.Bold);
+        btnAddOT.Enabled = false;
+        btnAddOT.Click  += new EventHandler(btnAddOT_Click);
+
+        // Loan hint row
+        ly += 32;
+        lblLoanHint.AutoSize  = true;
+        lblLoanHint.Font      = new Font("Segoe UI", 8.5F);
+        lblLoanHint.ForeColor = Color.FromArgb(150, 70, 0);
+        lblLoanHint.Location  = new Point(lx, ly + 6);
+        lblLoanHint.Text      = "Loan deduction (this period): —";
+
+        SetBtn(btnAddLoan, "+ Add to Deductions", 200, ly, 145, 26,
+            Color.FromArgb(150, 70, 0), Color.White);
+        btnAddLoan.Font    = new Font("Segoe UI", 8F, FontStyle.Bold);
+        btnAddLoan.Enabled = false;
+        btnAddLoan.Click  += new EventHandler(btnAddLoan_Click);
+
         // ── Right panel ────────────────────────────────────────
         pnlRight.BackColor   = Color.White;
         pnlRight.BorderStyle = BorderStyle.FixedSingle;
         pnlRight.Location    = new Point(416, 90);
-        pnlRight.Size        = new Size(634, 460);
+        pnlRight.Size        = new Size(634, 530);
         foreach (Control c in new Control[] {
             lblFilterEmployee, cmbFilterEmployee,
             lblFilterMonth,    cmbFilterMonth,
@@ -353,7 +397,7 @@ partial class frmPayroll
 
         // DataGridView
         dgvPayroll.Location                                = new Point(10, 48);
-        dgvPayroll.Size                                    = new Size(610, 380);
+        dgvPayroll.Size                                    = new Size(610, 450);
         dgvPayroll.ReadOnly                                = true;
         dgvPayroll.SelectionMode                           = DataGridViewSelectionMode.FullRowSelect;
         dgvPayroll.MultiSelect                             = false;
@@ -372,10 +416,10 @@ partial class frmPayroll
         lblStatus.AutoSize  = true;
         lblStatus.Font      = new Font("Segoe UI", 9F);
         lblStatus.ForeColor = Color.FromArgb(80, 80, 80);
-        lblStatus.Location  = new Point(10, 437);
+        lblStatus.Location  = new Point(10, 507);
         lblStatus.Text      = "Records: 0";
 
-        SetBtn(btnPaySlip, "View Pay Slip", 460, 430, 120, 26,
+        SetBtn(btnPaySlip, "View Pay Slip", 460, 500, 120, 26,
             Color.FromArgb(0, 120, 212), Color.White);
         btnPaySlip.Click += new EventHandler(btnPaySlip_Click);
 
@@ -383,7 +427,7 @@ partial class frmPayroll
         lblFooter.AutoSize  = false;
         lblFooter.Font      = new Font("Segoe UI", 8F);
         lblFooter.ForeColor = Color.FromArgb(150, 150, 150);
-        lblFooter.Location  = new Point(0, 558);
+        lblFooter.Location  = new Point(0, 638);
         lblFooter.Size      = new Size(1060, 20);
         lblFooter.Text      = "   Payroll Management System  |  2025";
         lblFooter.TextAlign = ContentAlignment.MiddleLeft;
@@ -392,7 +436,7 @@ partial class frmPayroll
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode       = AutoScaleMode.Font;
         BackColor           = lightBg;
-        ClientSize          = new Size(1060, 580);
+        ClientSize          = new Size(1060, 660);
         Controls.Add(lblFooter);
         Controls.Add(pnlRight);
         Controls.Add(pnlLeft);

@@ -22,6 +22,9 @@ partial class frmMain
     private System.Windows.Forms.Button btnBulkPayroll;
     private System.Windows.Forms.Button btnLeaveManagement;
     private System.Windows.Forms.Button btnSettings;
+    private System.Windows.Forms.Button btnOvertime;
+    private System.Windows.Forms.Button btnLoanManagement;
+    private System.Windows.Forms.Button btnAIAssistant;
 
     protected override void Dispose(bool disposing)
     {
@@ -49,6 +52,9 @@ partial class frmMain
         btnBulkPayroll     = new Button();
         btnLeaveManagement = new Button();
         btnSettings        = new Button();
+        btnOvertime        = new Button();
+        btnLoanManagement  = new Button();
+        btnAIAssistant     = new Button();
 
         SuspendLayout();
         pnlHeader.SuspendLayout();
@@ -216,11 +222,53 @@ partial class frmMain
         btnSettings.Cursor = Cursors.Hand;
         btnSettings.Click += new System.EventHandler(btnSettings_Click);
 
+        // ── Overtime Management tile (row 3) ──────────────────────
+        btnOvertime.BackColor = Color.White;
+        btnOvertime.FlatAppearance.BorderColor = primaryBlue;
+        btnOvertime.FlatAppearance.BorderSize = 2;
+        btnOvertime.FlatStyle = FlatStyle.Flat;
+        btnOvertime.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnOvertime.ForeColor = primaryBlue;
+        btnOvertime.Location = new Point(485, 370);
+        btnOvertime.Size = new Size(210, 100);
+        btnOvertime.Text = "Overtime\r\nManagement";
+        btnOvertime.UseVisualStyleBackColor = false;
+        btnOvertime.Cursor = Cursors.Hand;
+        btnOvertime.Click += new System.EventHandler(btnOvertime_Click);
+
+        // ── Loan Management tile (row 4) ──────────────────────────
+        btnLoanManagement.BackColor = Color.White;
+        btnLoanManagement.FlatAppearance.BorderColor = primaryBlue;
+        btnLoanManagement.FlatAppearance.BorderSize = 2;
+        btnLoanManagement.FlatStyle = FlatStyle.Flat;
+        btnLoanManagement.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnLoanManagement.ForeColor = primaryBlue;
+        btnLoanManagement.Location = new Point(25, 490);
+        btnLoanManagement.Size = new Size(210, 100);
+        btnLoanManagement.Text = "Loan & Advance\r\nManagement";
+        btnLoanManagement.UseVisualStyleBackColor = false;
+        btnLoanManagement.Cursor = Cursors.Hand;
+        btnLoanManagement.Click += new System.EventHandler(btnLoanManagement_Click);
+
+        // ── AI Assistant tile (row 4) ──────────────────────────
+        btnAIAssistant.BackColor = Color.White;
+        btnAIAssistant.FlatAppearance.BorderColor = primaryBlue;
+        btnAIAssistant.FlatAppearance.BorderSize = 2;
+        btnAIAssistant.FlatStyle = FlatStyle.Flat;
+        btnAIAssistant.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnAIAssistant.ForeColor = primaryBlue;
+        btnAIAssistant.Location = new Point(255, 490);
+        btnAIAssistant.Size = new Size(210, 100);
+        btnAIAssistant.Text = "AI Payroll\r\nAssistant";
+        btnAIAssistant.UseVisualStyleBackColor = false;
+        btnAIAssistant.Cursor = Cursors.Hand;
+        btnAIAssistant.Click += new System.EventHandler(btnAIAssistant_Click);
+
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize = false;
         lblFooter.Font = new Font("Segoe UI", 8F);
         lblFooter.ForeColor = Color.FromArgb(150, 150, 150);
-        lblFooter.Location = new Point(0, 588);
+        lblFooter.Location = new Point(0, 610);
         lblFooter.Size = new Size(820, 20);
         lblFooter.Text = "   Payroll Management System  |  2025";
         lblFooter.TextAlign = ContentAlignment.MiddleLeft;
@@ -229,8 +277,11 @@ partial class frmMain
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.FromArgb(245, 247, 250);
-        ClientSize = new Size(820, 610);
+        ClientSize = new Size(820, 635);
         Controls.Add(lblFooter);
+        Controls.Add(btnAIAssistant);
+        Controls.Add(btnLoanManagement);
+        Controls.Add(btnOvertime);
         Controls.Add(btnSettings);
         Controls.Add(btnLeaveManagement);
         Controls.Add(btnBulkPayroll);

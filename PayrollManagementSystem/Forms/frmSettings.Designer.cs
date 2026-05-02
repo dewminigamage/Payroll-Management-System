@@ -13,6 +13,13 @@ partial class frmSettings
     private TabControl tabMain;
     private TabPage   tabCompany;
     private TabPage   tabRates;
+    private TabPage   tabTax;
+    private DataGridView dgvTaxBrackets;
+    private Button    btnAddBracket;
+    private Button    btnDeleteBracket;
+    private Button    btnSaveBrackets;
+    private Button    btnResetBrackets;
+    private Label     lblTaxInfo;
 
     // ── Company Info tab ───────────────────────────────────────
     private Label     lblCompanyName;
@@ -33,6 +40,9 @@ partial class frmSettings
     private NumericUpDown  nudEtfRate;
     private Label          lblEtfPct;
     private Label          lblEtfNote;
+    private Label          lblWorkHours;
+    private NumericUpDown  nudWorkHours;
+    private Label          lblWorkHoursNote;
     private Panel          pnlRateExample;
     private Label          lblExampleTitle;
     private Label          lblExampleText;
@@ -77,13 +87,15 @@ partial class frmSettings
         tabMain     = new TabControl();
         tabCompany  = new TabPage("Company Info");
         tabRates    = new TabPage("Payroll Rates");
+        tabTax      = new TabPage("Tax Brackets");
         tabMain.Font     = new Font("Segoe UI", 9.5F);
         tabMain.Location = new Point(10, 80);
         tabMain.Size     = new Size(455, 300);
-        tabMain.TabPages.AddRange(new[] { tabCompany, tabRates });
+        tabMain.TabPages.AddRange(new[] { tabCompany, tabRates, tabTax });
 
         BuildCompanyTab(primaryBlue);
         BuildRatesTab(primaryBlue);
+        BuildTaxTab(primaryBlue);
 
         // ── Buttons ────────────────────────────────────────────
         btnSave   = new Button();
@@ -198,11 +210,29 @@ partial class frmSettings
             Text      = "Paid by employer — shown on pay slip but NOT deducted from employee net salary."
         };
 
+        lblWorkHours = MakeLabel("Working Hours/Month:", new Point(lx, 130));
+        nudWorkHours = new NumericUpDown
+        {
+            Location  = new Point(nx, 127),
+            Size      = new Size(75, 23),
+            Minimum   = 1,
+            Maximum   = 744,
+            Value     = 160
+        };
+        lblWorkHoursNote = new Label
+        {
+            AutoSize  = true,
+            Font      = new Font("Segoe UI", 8F),
+            ForeColor = Color.FromArgb(100, 100, 100),
+            Location  = new Point(lx, 155),
+            Text      = "Used to calculate overtime hourly rate (BasicSalary ÷ hours)."
+        };
+
         pnlRateExample = new Panel
         {
             BackColor = Color.FromArgb(240, 248, 255),
             BorderStyle = BorderStyle.FixedSingle,
-            Location  = new Point(lx, 140),
+            Location  = new Point(lx, 175),
             Size      = new Size(420, 90)
         };
         lblExampleTitle = new Label
@@ -231,9 +261,87 @@ partial class frmSettings
         {
             lblEpfRate, nudEpfRate, lblEpfPct, lblEpfNote,
             lblEtfRate, nudEtfRate, lblEtfPct, lblEtfNote,
+            lblWorkHours, nudWorkHours, lblWorkHoursNote,
             pnlRateExample
         });
     }
+
+    private void BuildTaxTab(Color primaryBlue)
+    {
+        const int lx = 8;
+
+        lblTaxInfo = new Label
+        {
+            AutoSize  = true,
+            Font      = new Font("Segoe UI", 8.5F),
+            ForeColor = Color.FromArgb(80, 80, 80),
+            Location  = new Point(lx, 10),
+            Text      = "Monthly gross income brackets. Leave Max Income blank for the top bracket."
+        };
+
+        dgvTaxBrackets = new DataGridView
+        {
+            Location                  = new Point(lx, 32),
+            Size                      = new Size(430, 172),
+            ReadOnly                  = false,
+            AllowUserToAddRows        = false,
+            AllowUserToDeleteRows     = false,
+            BackgroundColor           = Color.White,
+            BorderStyle               = BorderStyle.FixedSingle,
+            RowHeadersVisible         = false,
+            SelectionMode             = DataGridViewSelectionMode.FullRowSelect,
+            Font                      = new Font("Segoe UI", 9F),
+            AutoSizeColumnsMode       = DataGridViewAutoSizeColumnsMode.Fill,
+            EnableHeadersVisualStyles = false
+        };
+        dgvTaxBrackets.ColumnHeadersDefaultCellStyle.BackColor = primaryBlue;
+        dgvTaxBrackets.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+        dgvTaxBrackets.ColumnHeadersDefaultCellStyle.Font      = new Font("Segoe UI", 9F, FontStyle.Bold);
+
+        var colMin = new DataGridViewTextBoxColumn
+        {
+            Name = "ColMin", HeaderText = "Min Income (LKR)", DataPropertyName = "MinIncome"
+        };
+        var colMax = new DataGridViewTextBoxColumn
+        {
+            Name = "ColMax", HeaderText = "Max Income (blank = ∞)", DataPropertyName = "MaxIncomeDisplay"
+        };
+        var colRate = new DataGridViewTextBoxColumn
+        {
+            Name = "ColRate", HeaderText = "Tax Rate %", DataPropertyName = "TaxRatePct"
+        };
+        dgvTaxBrackets.Columns.AddRange(new DataGridViewColumn[] { colMin, colMax, colRate });
+
+        btnAddBracket = MakeTabBtn("+ Add Row",    primaryBlue,           new Point(lx,       213));
+        btnDeleteBracket = MakeTabBtn("Delete Row", Color.FromArgb(196, 43, 28), new Point(lx + 100, 213));
+        btnSaveBrackets  = MakeTabBtn("Save Brackets", Color.FromArgb(0, 130, 70), new Point(lx + 248, 213));
+        btnResetBrackets = MakeTabBtn("Defaults",  Color.FromArgb(100, 100, 100), new Point(lx + 357, 213));
+
+        btnAddBracket.Click    += btnAddBracket_Click;
+        btnDeleteBracket.Click += btnDeleteBracket_Click;
+        btnSaveBrackets.Click  += btnSaveBrackets_Click;
+        btnResetBrackets.Click += btnResetBrackets_Click;
+
+        tabTax.Controls.AddRange(new Control[]
+        {
+            lblTaxInfo, dgvTaxBrackets,
+            btnAddBracket, btnDeleteBracket, btnSaveBrackets, btnResetBrackets
+        });
+    }
+
+    private static Button MakeTabBtn(string text, Color back, Point loc) =>
+        new()
+        {
+            Text                      = text,
+            Location                  = loc,
+            Size                      = new Size(94, 26),
+            BackColor                 = back,
+            ForeColor                 = Color.White,
+            FlatStyle                 = FlatStyle.Flat,
+            Font                      = new Font("Segoe UI", 8.5F, FontStyle.Bold),
+            Cursor                    = Cursors.Hand,
+            UseVisualStyleBackColor   = false
+        };
 
     private static Label MakeLabel(string text, Point loc) =>
         new() { AutoSize = true, Text = text, Location = loc };

@@ -1,6 +1,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using PayrollManagementSystem.Database;
+using PayrollManagementSystem.Models;
 
 namespace PayrollManagementSystem.Forms;
 
@@ -157,6 +158,21 @@ public partial class frmEmployee : Form
         if (!ValidateInput()) return;
         try
         {
+            // Detect salary change before writing the UPDATE
+            decimal newSalary = decimal.Parse(txtBasicSalary.Text);
+            var salRow = DatabaseHelper.ExecuteQuery(
+                "SELECT BasicSalary FROM Employees WHERE EmployeeID = @ID",
+                [new("@ID", selectedEmployeeID)]);
+            decimal oldSalary = salRow.Rows.Count > 0
+                ? Convert.ToDecimal(salRow.Rows[0]["BasicSalary"]) : newSalary;
+
+            string? reason = null;
+            if (newSalary != oldSalary)
+            {
+                reason = PromptReason(
+                    $"Salary is changing from {oldSalary:N2} → {newSalary:N2}.\nReason for this increment/change (optional):");
+            }
+
             const string query = @"
                 UPDATE Employees SET
                     FullName      = @FullName,
@@ -169,6 +185,23 @@ public partial class frmEmployee : Form
                     Email         = @Email
                 WHERE EmployeeID = @EmployeeID";
             DatabaseHelper.ExecuteNonQuery(query, BuildParameters(includeID: true));
+
+            // Log salary change after successful update
+            if (newSalary != oldSalary)
+            {
+                DatabaseHelper.ExecuteNonQuery(@"
+                    INSERT INTO SalaryHistory (EmployeeID, OldSalary, NewSalary, EffectiveDate, Reason, ChangedBy)
+                    VALUES (@EID, @Old, @New, @Date, @Reason, @By)",
+                [
+                    new("@EID",    selectedEmployeeID),
+                    new("@Old",    oldSalary),
+                    new("@New",    newSalary),
+                    new("@Date",   DateTime.Today),
+                    new("@Reason", reason ?? (object)DBNull.Value),
+                    new("@By",     UserSession.FullName)
+                ]);
+            }
+
             MessageBox.Show("Employee updated successfully.", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             ClearForm();
@@ -184,6 +217,45 @@ public partial class frmEmployee : Form
             MessageBox.Show($"Error updating employee:\n{ex.Message}", "Error",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+    }
+
+    private void btnHistory_Click(object sender, EventArgs e)
+    {
+        if (selectedEmployeeID == 0)
+        {
+            MessageBox.Show("Please select an employee from the list first.", "No Selection",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        using var frm = new frmSalaryHistory(selectedEmployeeID, txtFullName.Text);
+        frm.ShowDialog();
+    }
+
+    private static string? PromptReason(string prompt)
+    {
+        using var dlg   = new Form();
+        using var lbl   = new Label  { Text = prompt, AutoSize = false, Dock = DockStyle.Top, Height = 52, Font = new Font("Segoe UI", 9F), Padding = new Padding(8, 8, 8, 0) };
+        using var txt   = new TextBox { Dock = DockStyle.Fill, Font = new Font("Segoe UI", 9F) };
+        using var ok    = new Button  { Text = "OK",     DialogResult = DialogResult.OK,     Width = 80, Height = 28 };
+        using var skip  = new Button  { Text = "Skip",   DialogResult = DialogResult.Cancel, Width = 80, Height = 28 };
+        using var flow  = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 36, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(4, 2, 4, 2) };
+
+        flow.Controls.Add(ok);
+        flow.Controls.Add(skip);
+        dlg.Controls.Add(txt);
+        dlg.Controls.Add(flow);
+        dlg.Controls.Add(lbl);
+        dlg.AcceptButton     = ok;
+        dlg.ClientSize       = new Size(420, 130);
+        dlg.FormBorderStyle  = FormBorderStyle.FixedDialog;
+        dlg.MaximizeBox      = false;
+        dlg.MinimizeBox      = false;
+        dlg.StartPosition    = FormStartPosition.CenterParent;
+        dlg.Text             = "Salary Change Reason";
+        dlg.Font             = new Font("Segoe UI", 9F);
+
+        return dlg.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(txt.Text)
+            ? txt.Text.Trim() : null;
     }
 
     private void btnDelete_Click(object sender, EventArgs e)

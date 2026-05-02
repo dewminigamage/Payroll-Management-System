@@ -32,6 +32,7 @@ partial class frmEmployee
     private System.Windows.Forms.Button btnUpdate;
     private System.Windows.Forms.Button btnDelete;
     private System.Windows.Forms.Button btnClear;
+    private System.Windows.Forms.Button btnHistory;
     private System.Windows.Forms.Panel pnlSearch;
     private System.Windows.Forms.Label lblSearch;
     private System.Windows.Forms.TextBox txtSearch;
@@ -79,6 +80,7 @@ partial class frmEmployee
         btnUpdate         = new Button();
         btnDelete         = new Button();
         btnClear          = new Button();
+        btnHistory        = new Button();
         pnlSearch         = new Panel();
         lblSearch         = new Label();
         txtSearch         = new TextBox();
@@ -121,7 +123,7 @@ partial class frmEmployee
             lblJoinDate,     dtpJoinDate,
             lblContactNumber,txtContactNumber,
             lblEmail,        txtEmail,
-            btnAdd, btnUpdate, btnDelete, btnClear
+            btnAdd, btnUpdate, btnDelete, btnClear, btnHistory
         });
 
         // Row helper constants
@@ -185,9 +187,12 @@ partial class frmEmployee
         btnUpdate.Click += new System.EventHandler(btnUpdate_Click);
         btnDelete.Click += new System.EventHandler(btnDelete_Click);
 
-        StyleButton(btnClear, "Clear", SystemColors.Control, new Point(118, ry + 45), new Size(90, 30), ui9, false);
+        StyleButton(btnClear,   "Clear",          SystemColors.Control,          new Point(118, ry + 45), new Size(90, 30), ui9, false);
         btnClear.ForeColor = darkText;
         btnClear.Click += new System.EventHandler(btnClear_Click);
+
+        StyleButton(btnHistory, "Salary History", Color.FromArgb(60, 80, 140), new Point(224, ry + 45), new Size(105, 30), ui9, true);
+        btnHistory.Click += new System.EventHandler(btnHistory_Click);
 
         // ── Search panel ──────────────────────────────────────────────────────
         pnlSearch.BackColor   = Color.FromArgb(245, 248, 252);

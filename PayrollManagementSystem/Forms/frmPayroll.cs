@@ -19,6 +19,9 @@ public partial class frmPayroll : Form
         LoadEmployeeCombo();
         LoadFilterEmployeeCombo();
         LoadPayroll();
+        // Update summary labels to reflect configured rates
+        lblEPFLbl.Text = $"EPF ({PayrollSettings.EpfLabel} employee):";
+        lblETFLbl.Text = $"ETF ({PayrollSettings.EtfLabel} employer):";
     }
 
     // ── Data loading ───────────────────────────────────────────────────────
@@ -136,7 +139,7 @@ public partial class frmPayroll : Form
     {
         if (cmbEmployee.SelectedValue == null) return;
         int empID = Convert.ToInt32(cmbEmployee.SelectedValue);
-        if (empID == 0) { txtBasicSalary.Text = ""; return; }
+        if (empID == 0) { txtBasicSalary.Text = ""; LoadOTHint(); LoadLoanHint(); return; }
 
         var dt = DatabaseHelper.ExecuteQuery(
             "SELECT BasicSalary FROM Employees WHERE EmployeeID = @EmployeeID",
@@ -144,6 +147,97 @@ public partial class frmPayroll : Form
 
         if (dt.Rows.Count > 0)
             txtBasicSalary.Text = Convert.ToDecimal(dt.Rows[0]["BasicSalary"]).ToString("F2");
+        LoadOTHint();
+        LoadLoanHint();
+    }
+
+    private void cmbPayMonth_SelectedIndexChanged(object sender, EventArgs e) { LoadOTHint(); LoadLoanHint(); }
+    private void nudPayYear_ValueChanged(object sender, EventArgs e)           { LoadOTHint(); LoadLoanHint(); }
+
+    private void LoadOTHint()
+    {
+        if (cmbEmployee.SelectedValue == null || Convert.ToInt32(cmbEmployee.SelectedValue) == 0)
+        {
+            lblOTHint.Text      = "Overtime (this period): —";
+            btnAddOT.Enabled    = false;
+            btnAddOT.Tag        = null;
+            return;
+        }
+        int empID = Convert.ToInt32(cmbEmployee.SelectedValue);
+        int month = cmbPayMonth.SelectedIndex + 1;
+        int year  = (int)nudPayYear.Value;
+
+        var dt = DatabaseHelper.ExecuteQuery(
+            "SELECT OTHours, OTRateMultiplier, OTAmount FROM OvertimeRecords WHERE EmployeeID=@E AND PayMonth=@M AND PayYear=@Y",
+            [new("@E", empID), new("@M", month), new("@Y", year)]);
+
+        if (dt.Rows.Count == 0)
+        {
+            lblOTHint.Text   = "Overtime (this period): none recorded";
+            btnAddOT.Enabled = false;
+            btnAddOT.Tag     = null;
+        }
+        else
+        {
+            decimal hours  = Convert.ToDecimal(dt.Rows[0]["OTHours"]);
+            decimal rate   = Convert.ToDecimal(dt.Rows[0]["OTRateMultiplier"]);
+            decimal amount = Convert.ToDecimal(dt.Rows[0]["OTAmount"]);
+            lblOTHint.Text   = $"Overtime (this period): {hours:0.##} hrs × {rate:0.##}x  =  LKR {amount:N2}";
+            btnAddOT.Enabled = true;
+            btnAddOT.Tag     = amount;
+        }
+    }
+
+    private void btnAddOT_Click(object sender, EventArgs e)
+    {
+        if (btnAddOT.Tag is not decimal otAmount) return;
+        if (decimal.TryParse(txtAllowances.Text, out decimal existing))
+            txtAllowances.Text = (existing + otAmount).ToString("F2");
+        else
+            txtAllowances.Text = otAmount.ToString("F2");
+        btnAddOT.Enabled = false;
+    }
+
+    private void LoadLoanHint()
+    {
+        if (cmbEmployee.SelectedValue == null || Convert.ToInt32(cmbEmployee.SelectedValue) == 0)
+        {
+            lblLoanHint.Text   = "Loan deduction (this period): —";
+            btnAddLoan.Enabled = false;
+            btnAddLoan.Tag     = null;
+            return;
+        }
+        int empID = Convert.ToInt32(cmbEmployee.SelectedValue);
+
+        var dt = DatabaseHelper.ExecuteQuery(@"
+            SELECT SUM(MonthlyInstallment) AS TotalInst
+            FROM   EmployeeLoans
+            WHERE  EmployeeID = @E AND Status = 'Active'",
+            [new("@E", empID)]);
+
+        if (dt.Rows.Count == 0 || dt.Rows[0]["TotalInst"] == DBNull.Value)
+        {
+            lblLoanHint.Text   = "Loan deduction (this period): none";
+            btnAddLoan.Enabled = false;
+            btnAddLoan.Tag     = null;
+        }
+        else
+        {
+            decimal total = Convert.ToDecimal(dt.Rows[0]["TotalInst"]);
+            lblLoanHint.Text   = $"Loan deduction (this period):  LKR {total:N2}  (active loan)";
+            btnAddLoan.Enabled = true;
+            btnAddLoan.Tag     = total;
+        }
+    }
+
+    private void btnAddLoan_Click(object sender, EventArgs e)
+    {
+        if (btnAddLoan.Tag is not decimal loanAmt) return;
+        if (decimal.TryParse(txtOtherDeductions.Text, out decimal existing))
+            txtOtherDeductions.Text = (existing + loanAmt).ToString("F2");
+        else
+            txtOtherDeductions.Text = loanAmt.ToString("F2");
+        btnAddLoan.Enabled = false;
     }
 
     // ── Calculation ────────────────────────────────────────────────────────
@@ -153,15 +247,21 @@ public partial class frmPayroll : Form
         if (!TryParseInputs(out decimal basic, out decimal allowances, out decimal otherDed, out decimal tax))
             return;
 
-        decimal gross = basic + allowances;
-        decimal epf   = Math.Round(gross * PayrollSettings.EpfRate, 2);
-        decimal etf   = Math.Round(gross * PayrollSettings.EtfRate, 2);
-        decimal net   = gross - epf - tax - otherDed;
+        decimal gross    = basic + allowances;
+        decimal epf      = Math.Round(gross * PayrollSettings.EpfRate, 2);
+        decimal etf      = Math.Round(gross * PayrollSettings.EtfRate, 2);
 
-        lblGrossVal.Text   = gross.ToString("N2");
-        lblEPFVal.Text     = epf.ToString("N2");
-        lblETFVal.Text     = etf.ToString("N2");
-        lblNetVal.Text     = net.ToString("N2");
+        // Auto-calculate tax from configured brackets
+        decimal autoTax  = PayrollSettings.CalculateTax(gross);
+        txtTax.Text      = autoTax.ToString("F2");
+        tax              = autoTax;
+
+        decimal net      = gross - epf - tax - otherDed;
+
+        lblGrossVal.Text    = gross.ToString("N2");
+        lblEPFVal.Text      = epf.ToString("N2");
+        lblETFVal.Text      = etf.ToString("N2");
+        lblNetVal.Text      = net.ToString("N2");
         lblNetVal.ForeColor = net < 0
             ? Color.FromArgb(196, 43, 28)
             : Color.FromArgb(0, 100, 0);
@@ -362,16 +462,22 @@ public partial class frmPayroll : Form
 
     private void ClearForm()
     {
-        selectedPayrollID       = 0;
-        txtPayrollID.Text       = "";
+        selectedPayrollID         = 0;
+        txtPayrollID.Text         = "";
         cmbEmployee.SelectedIndex = -1;
         cmbPayMonth.SelectedIndex = DateTime.Today.Month - 1;
-        nudPayYear.Value        = DateTime.Today.Year;
-        txtBasicSalary.Text     = "";
-        txtAllowances.Text      = "0";
-        txtOtherDeductions.Text = "0";
-        txtTax.Text             = "0";
-        txtRemarks.Text         = "";
+        nudPayYear.Value          = DateTime.Today.Year;
+        txtBasicSalary.Text       = "";
+        txtAllowances.Text        = "0";
+        txtOtherDeductions.Text   = "0";
+        txtTax.Text               = "0";
+        txtRemarks.Text           = "";
+        lblOTHint.Text   = "Overtime (this period): —";
+        btnAddOT.Enabled = false;
+        btnAddOT.Tag     = null;
+        lblLoanHint.Text   = "Loan deduction (this period): —";
+        btnAddLoan.Enabled = false;
+        btnAddLoan.Tag     = null;
         UpdateSummaryLabels(0, 0, 0, 0);
     }
 
