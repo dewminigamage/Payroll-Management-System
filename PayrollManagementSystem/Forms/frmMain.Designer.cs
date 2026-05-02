@@ -18,6 +18,8 @@ partial class frmMain
     private System.Windows.Forms.Label lblWelcome;
     private System.Windows.Forms.Button btnLogout;
     private System.Windows.Forms.Label lblFooter;
+    private System.Windows.Forms.Button btnUserManagement;
+    private System.Windows.Forms.Button btnBulkPayroll;
 
     protected override void Dispose(bool disposing)
     {
@@ -40,7 +42,9 @@ partial class frmMain
         btnReports = new Button();
         lblWelcome = new Label();
         btnLogout  = new Button();
-        lblFooter  = new Label();
+        lblFooter          = new Label();
+        btnUserManagement  = new Button();
+        btnBulkPayroll     = new Button();
 
         SuspendLayout();
         pnlHeader.SuspendLayout();
@@ -152,6 +156,34 @@ partial class frmMain
         btnReports.Cursor = Cursors.Hand;
         btnReports.Click += new System.EventHandler(btnReports_Click);
 
+        // ── User Management tile (row 2) ──────────────────────────
+        btnUserManagement.BackColor = Color.White;
+        btnUserManagement.FlatAppearance.BorderColor = primaryBlue;
+        btnUserManagement.FlatAppearance.BorderSize = 2;
+        btnUserManagement.FlatStyle = FlatStyle.Flat;
+        btnUserManagement.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnUserManagement.ForeColor = primaryBlue;
+        btnUserManagement.Location = new Point(255, 250);
+        btnUserManagement.Size = new Size(210, 100);
+        btnUserManagement.Text = "User\r\nManagement";
+        btnUserManagement.UseVisualStyleBackColor = false;
+        btnUserManagement.Cursor = Cursors.Hand;
+        btnUserManagement.Click += new System.EventHandler(btnUserManagement_Click);
+
+        // ── Bulk Payroll tile (row 2) ─────────────────────────────
+        btnBulkPayroll.BackColor = Color.White;
+        btnBulkPayroll.FlatAppearance.BorderColor = primaryBlue;
+        btnBulkPayroll.FlatAppearance.BorderSize = 2;
+        btnBulkPayroll.FlatStyle = FlatStyle.Flat;
+        btnBulkPayroll.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnBulkPayroll.ForeColor = primaryBlue;
+        btnBulkPayroll.Location = new Point(485, 250);
+        btnBulkPayroll.Size = new Size(210, 100);
+        btnBulkPayroll.Text = "Bulk Payroll\r\nProcessing";
+        btnBulkPayroll.UseVisualStyleBackColor = false;
+        btnBulkPayroll.Cursor = Cursors.Hand;
+        btnBulkPayroll.Click += new System.EventHandler(btnBulkPayroll_Click);
+
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize = false;
         lblFooter.Font = new Font("Segoe UI", 8F);
@@ -167,6 +199,8 @@ partial class frmMain
         BackColor = Color.FromArgb(245, 247, 250);
         ClientSize = new Size(820, 490);
         Controls.Add(lblFooter);
+        Controls.Add(btnBulkPayroll);
+        Controls.Add(btnUserManagement);
         Controls.Add(btnReports);
         Controls.Add(btnPayroll);
         Controls.Add(btnAttendanceManagement);

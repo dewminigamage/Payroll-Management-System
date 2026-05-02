@@ -14,6 +14,8 @@ public partial class frmMain : Form
             btnEmployeeManagement.Enabled = false;
             btnAttendanceManagement.Enabled = false;
             btnPayroll.Enabled = false;
+            btnUserManagement.Enabled = false;
+            btnBulkPayroll.Enabled = false;
         }
     }
 
@@ -38,6 +40,12 @@ public partial class frmMain : Form
     private void btnReports_Click(object sender, EventArgs e)
     {
         using var frm = new frmReports();
+        frm.ShowDialog();
+    }
+
+    private void btnUserManagement_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmUserManagement();
         frm.ShowDialog();
     }
 

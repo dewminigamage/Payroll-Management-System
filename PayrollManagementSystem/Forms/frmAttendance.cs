@@ -264,7 +264,7 @@ public partial class frmAttendance : Form
 
         // Load employee into combo
         int empID = Convert.ToInt32(row.Cells["EmployeeID"].Value);
-        foreach (DataRowView item in (DataTable)cmbEmployee.DataSource!)
+        foreach (DataRowView item in ((DataTable)cmbEmployee.DataSource!).DefaultView)
         {
             if (Convert.ToInt32(item["EmployeeID"]) == empID)
             {
