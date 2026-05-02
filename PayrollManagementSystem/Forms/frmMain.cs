@@ -20,4 +20,10 @@ public partial class frmMain : Form
         using var frm = new frmAttendance();
         frm.ShowDialog();
     }
+
+    private void btnPayroll_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmPayroll();
+        frm.ShowDialog();
+    }
 }

@@ -13,6 +13,7 @@ partial class frmMain
     private System.Windows.Forms.Label lblModulesHeading;
     private System.Windows.Forms.Button btnEmployeeManagement;
     private System.Windows.Forms.Button btnAttendanceManagement;
+    private System.Windows.Forms.Button btnPayroll;
     private System.Windows.Forms.Label lblFooter;
 
     protected override void Dispose(bool disposing)
@@ -32,6 +33,7 @@ partial class frmMain
         lblModulesHeading = new Label();
         btnEmployeeManagement = new Button();
         btnAttendanceManagement = new Button();
+        btnPayroll = new Button();
         lblFooter = new Label();
 
         SuspendLayout();
@@ -91,6 +93,20 @@ partial class frmMain
         btnAttendanceManagement.Cursor = Cursors.Hand;
         btnAttendanceManagement.Click += new System.EventHandler(btnAttendanceManagement_Click);
 
+        // ── Payroll tile ───────────────────────────────────────
+        btnPayroll.BackColor = Color.White;
+        btnPayroll.FlatAppearance.BorderColor = primaryBlue;
+        btnPayroll.FlatAppearance.BorderSize = 2;
+        btnPayroll.FlatStyle = FlatStyle.Flat;
+        btnPayroll.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnPayroll.ForeColor = primaryBlue;
+        btnPayroll.Location = new Point(485, 130);
+        btnPayroll.Size = new Size(210, 100);
+        btnPayroll.Text = "Payroll /\r\nSalary Calculation";
+        btnPayroll.UseVisualStyleBackColor = false;
+        btnPayroll.Cursor = Cursors.Hand;
+        btnPayroll.Click += new System.EventHandler(btnPayroll_Click);
+
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize = false;
         lblFooter.Font = new Font("Segoe UI", 8F);
@@ -106,6 +122,7 @@ partial class frmMain
         BackColor = Color.FromArgb(245, 247, 250);
         ClientSize = new Size(820, 490);
         Controls.Add(lblFooter);
+        Controls.Add(btnPayroll);
         Controls.Add(btnAttendanceManagement);
         Controls.Add(btnEmployeeManagement);
         Controls.Add(lblModulesHeading);
