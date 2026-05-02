@@ -1,6 +1,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using PayrollManagementSystem.Database;
+using PayrollManagementSystem.Helpers;
 
 namespace PayrollManagementSystem.Forms;
 
@@ -108,8 +109,8 @@ public partial class frmPayroll : Form
         dgvPayroll.Columns["PayPeriod"].HeaderText       = "Period";
         dgvPayroll.Columns["BasicSalary"].HeaderText     = "Basic";
         dgvPayroll.Columns["GrossSalary"].HeaderText     = "Gross";
-        dgvPayroll.Columns["EPF"].HeaderText             = "EPF (8%)";
-        dgvPayroll.Columns["ETF"].HeaderText             = "ETF (3%)";
+        dgvPayroll.Columns["EPF"].HeaderText             = $"EPF ({PayrollSettings.EpfLabel})";
+        dgvPayroll.Columns["ETF"].HeaderText             = $"ETF ({PayrollSettings.EtfLabel})";
         dgvPayroll.Columns["OtherDeductions"].HeaderText = "Other Ded.";
         dgvPayroll.Columns["NetSalary"].HeaderText       = "Net Salary";
 
@@ -153,8 +154,8 @@ public partial class frmPayroll : Form
             return;
 
         decimal gross = basic + allowances;
-        decimal epf   = Math.Round(gross * 0.08m, 2);
-        decimal etf   = Math.Round(gross * 0.03m, 2);
+        decimal epf   = Math.Round(gross * PayrollSettings.EpfRate, 2);
+        decimal etf   = Math.Round(gross * PayrollSettings.EtfRate, 2);
         decimal net   = gross - epf - tax - otherDed;
 
         lblGrossVal.Text   = gross.ToString("N2");
@@ -175,8 +176,8 @@ public partial class frmPayroll : Form
             return;
 
         decimal gross = basic + allowances;
-        decimal epf   = Math.Round(gross * 0.08m, 2);
-        decimal etf   = Math.Round(gross * 0.03m, 2);
+        decimal epf   = Math.Round(gross * PayrollSettings.EpfRate, 2);
+        decimal etf   = Math.Round(gross * PayrollSettings.EtfRate, 2);
         decimal net   = gross - epf - tax - otherDed;
 
         try
@@ -224,8 +225,8 @@ public partial class frmPayroll : Form
             return;
 
         decimal gross = basic + allowances;
-        decimal epf   = Math.Round(gross * 0.08m, 2);
-        decimal etf   = Math.Round(gross * 0.03m, 2);
+        decimal epf   = Math.Round(gross * PayrollSettings.EpfRate, 2);
+        decimal etf   = Math.Round(gross * PayrollSettings.EtfRate, 2);
         decimal net   = gross - epf - tax - otherDed;
 
         try

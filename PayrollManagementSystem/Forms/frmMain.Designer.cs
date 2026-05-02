@@ -20,6 +20,8 @@ partial class frmMain
     private System.Windows.Forms.Label lblFooter;
     private System.Windows.Forms.Button btnUserManagement;
     private System.Windows.Forms.Button btnBulkPayroll;
+    private System.Windows.Forms.Button btnLeaveManagement;
+    private System.Windows.Forms.Button btnSettings;
 
     protected override void Dispose(bool disposing)
     {
@@ -45,6 +47,8 @@ partial class frmMain
         lblFooter          = new Label();
         btnUserManagement  = new Button();
         btnBulkPayroll     = new Button();
+        btnLeaveManagement = new Button();
+        btnSettings        = new Button();
 
         SuspendLayout();
         pnlHeader.SuspendLayout();
@@ -184,11 +188,39 @@ partial class frmMain
         btnBulkPayroll.Cursor = Cursors.Hand;
         btnBulkPayroll.Click += new System.EventHandler(btnBulkPayroll_Click);
 
+        // ── Leave Management tile (row 3) ─────────────────────────
+        btnLeaveManagement.BackColor = Color.White;
+        btnLeaveManagement.FlatAppearance.BorderColor = primaryBlue;
+        btnLeaveManagement.FlatAppearance.BorderSize = 2;
+        btnLeaveManagement.FlatStyle = FlatStyle.Flat;
+        btnLeaveManagement.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnLeaveManagement.ForeColor = primaryBlue;
+        btnLeaveManagement.Location = new Point(25, 370);
+        btnLeaveManagement.Size = new Size(210, 100);
+        btnLeaveManagement.Text = "Leave\r\nManagement";
+        btnLeaveManagement.UseVisualStyleBackColor = false;
+        btnLeaveManagement.Cursor = Cursors.Hand;
+        btnLeaveManagement.Click += new System.EventHandler(btnLeaveManagement_Click);
+
+        // ── Settings tile (row 3) ──────────────────────────────────
+        btnSettings.BackColor = Color.White;
+        btnSettings.FlatAppearance.BorderColor = primaryBlue;
+        btnSettings.FlatAppearance.BorderSize = 2;
+        btnSettings.FlatStyle = FlatStyle.Flat;
+        btnSettings.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnSettings.ForeColor = primaryBlue;
+        btnSettings.Location = new Point(255, 370);
+        btnSettings.Size = new Size(210, 100);
+        btnSettings.Text = "System\r\nSettings";
+        btnSettings.UseVisualStyleBackColor = false;
+        btnSettings.Cursor = Cursors.Hand;
+        btnSettings.Click += new System.EventHandler(btnSettings_Click);
+
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize = false;
         lblFooter.Font = new Font("Segoe UI", 8F);
         lblFooter.ForeColor = Color.FromArgb(150, 150, 150);
-        lblFooter.Location = new Point(0, 468);
+        lblFooter.Location = new Point(0, 588);
         lblFooter.Size = new Size(820, 20);
         lblFooter.Text = "   Payroll Management System  |  2025";
         lblFooter.TextAlign = ContentAlignment.MiddleLeft;
@@ -197,8 +229,10 @@ partial class frmMain
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.FromArgb(245, 247, 250);
-        ClientSize = new Size(820, 490);
+        ClientSize = new Size(820, 610);
         Controls.Add(lblFooter);
+        Controls.Add(btnSettings);
+        Controls.Add(btnLeaveManagement);
         Controls.Add(btnBulkPayroll);
         Controls.Add(btnUserManagement);
         Controls.Add(btnReports);

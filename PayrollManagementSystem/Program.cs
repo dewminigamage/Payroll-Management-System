@@ -1,4 +1,5 @@
 using PayrollManagementSystem.Forms;
+using PayrollManagementSystem.Helpers;
 using PayrollManagementSystem.Models;
 
 namespace PayrollManagementSystem;
@@ -15,6 +16,8 @@ internal static class Program
         {
             using var login = new frmLogin();
             if (login.ShowDialog() != DialogResult.OK) break;
+
+            PayrollSettings.Reload();
 
             using var main = new frmMain();
             Application.Run(main);

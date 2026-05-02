@@ -3,6 +3,7 @@ using System.Drawing.Printing;
 using System.Drawing.Text;
 using Microsoft.Data.SqlClient;
 using PayrollManagementSystem.Database;
+using PayrollManagementSystem.Helpers;
 
 namespace PayrollManagementSystem.Forms;
 
@@ -178,7 +179,7 @@ public partial class frmPaySlip : Form
 
         // ── Header (blue) ─────────────────────────────────────────────────
         g.FillRectangle(bBlue, 0, 0, 614, 60);
-        g.DrawString("PAYROLL MANAGEMENT SYSTEM", fntCompany, bWhite,
+        g.DrawString(PayrollSettings.CompanyName.ToUpperInvariant(), fntCompany, bWhite,
             new RectangleF(0, 7, 614, 27), sfC);
         g.DrawString($"PAY SLIP  —  {_payPeriod}", fntSlipSub,
             new SolidBrush(Color.FromArgb(205, 232, 255)),
@@ -209,7 +210,7 @@ public partial class frmPaySlip : Form
         const float ty = 183;
         const float tr = 22;
 
-        TRow(g, fntValue, bDark,    lx, ty,       "Basic Salary",     _basicSalary,    rx, "EPF (8% employee)", _epf);
+        TRow(g, fntValue, bDark,    lx, ty,       "Basic Salary",     _basicSalary,    rx, $"EPF ({PayrollSettings.EpfLabel} employee)", _epf);
         TRow(g, fntValue, bDark,    lx, ty + tr,  "Allowances",       _allowances,     rx, "Tax",               _tax);
         TRow(g, fntValue, bDark,    lx, ty+tr*2,  null,               null,            rx, "Other Deductions",  _otherDeductions);
 
@@ -233,7 +234,7 @@ public partial class frmPaySlip : Form
         // ── ETF note ──────────────────────────────────────────────────────
         float noteY = ny + 50;
         g.DrawString(
-            $"* ETF (employer contribution, 3%): {_etf:N2}  —  paid by employer, NOT deducted from your net salary.",
+            $"* ETF (employer contribution, {PayrollSettings.EtfLabel}): {_etf:N2}  —  paid by employer, NOT deducted from your net salary.",
             fntSmall, bGray, new RectangleF(lx, noteY, 584, 16));
 
         if (!string.IsNullOrWhiteSpace(_remarks))

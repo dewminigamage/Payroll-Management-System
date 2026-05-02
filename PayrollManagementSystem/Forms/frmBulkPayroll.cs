@@ -1,6 +1,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using PayrollManagementSystem.Database;
+using PayrollManagementSystem.Helpers;
 
 namespace PayrollManagementSystem.Forms;
 
@@ -65,8 +66,8 @@ public partial class frmBulkPayroll : Form
             bool done  = Convert.ToInt32(src["AlreadyDone"]) == 1;
             decimal basic = Convert.ToDecimal(src["BasicSalary"]);
             decimal gross = basic;                             // Allowances default 0
-            decimal epf   = Math.Round(gross * 0.08m, 2);
-            decimal etf   = Math.Round(gross * 0.03m, 2);
+            decimal epf   = Math.Round(gross * PayrollSettings.EpfRate, 2);
+            decimal etf   = Math.Round(gross * PayrollSettings.EtfRate, 2);
             decimal net   = gross - epf;
 
             _table.Rows.Add(
@@ -146,8 +147,8 @@ public partial class frmBulkPayroll : Form
             dgvBulk.Columns[col].DefaultCellStyle.Format    = "N2";
         }
         dgvBulk.Columns[ColGross].HeaderText = "Gross";
-        dgvBulk.Columns[ColEPF].HeaderText   = "EPF (8%)";
-        dgvBulk.Columns[ColETF].HeaderText   = "ETF (3%)";
+        dgvBulk.Columns[ColEPF].HeaderText   = $"EPF ({PayrollSettings.EpfLabel})";
+        dgvBulk.Columns[ColETF].HeaderText   = $"ETF ({PayrollSettings.EtfLabel})";
         dgvBulk.Columns[ColNet].HeaderText   = "Net Salary";
         dgvBulk.Columns[ColNet].DefaultCellStyle.Font      = new Font("Segoe UI", 8.5F, FontStyle.Bold);
         dgvBulk.Columns[ColNet].DefaultCellStyle.ForeColor = Color.FromArgb(0, 100, 0);
@@ -239,8 +240,8 @@ public partial class frmBulkPayroll : Form
         decimal tax    = ToDecimal(r[ColTax]);
         decimal other  = ToDecimal(r[ColOtherDed]);
         decimal gross  = basic + allow;
-        decimal epf    = Math.Round(gross * 0.08m, 2);
-        decimal etf    = Math.Round(gross * 0.03m, 2);
+        decimal epf    = Math.Round(gross * PayrollSettings.EpfRate, 2);
+        decimal etf    = Math.Round(gross * PayrollSettings.EtfRate, 2);
         decimal net    = gross - epf - tax - other;
 
         r[ColGross] = gross;

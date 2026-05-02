@@ -16,6 +16,8 @@ public partial class frmMain : Form
             btnPayroll.Enabled = false;
             btnUserManagement.Enabled = false;
             btnBulkPayroll.Enabled = false;
+            btnLeaveManagement.Enabled = false;
+            btnSettings.Enabled = false;
         }
     }
 
@@ -46,6 +48,24 @@ public partial class frmMain : Form
     private void btnUserManagement_Click(object sender, EventArgs e)
     {
         using var frm = new frmUserManagement();
+        frm.ShowDialog();
+    }
+
+    private void btnBulkPayroll_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmBulkPayroll();
+        frm.ShowDialog();
+    }
+
+    private void btnLeaveManagement_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmLeaveManagement();
+        frm.ShowDialog();
+    }
+
+    private void btnSettings_Click(object sender, EventArgs e)
+    {
+        using var frm = new frmSettings();
         frm.ShowDialog();
     }
 
