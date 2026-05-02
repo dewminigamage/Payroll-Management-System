@@ -14,6 +14,7 @@ partial class frmMain
     private System.Windows.Forms.Button btnEmployeeManagement;
     private System.Windows.Forms.Button btnAttendanceManagement;
     private System.Windows.Forms.Button btnPayroll;
+    private System.Windows.Forms.Button btnReports;
     private System.Windows.Forms.Label lblFooter;
 
     protected override void Dispose(bool disposing)
@@ -34,6 +35,7 @@ partial class frmMain
         btnEmployeeManagement = new Button();
         btnAttendanceManagement = new Button();
         btnPayroll = new Button();
+        btnReports = new Button();
         lblFooter = new Label();
 
         SuspendLayout();
@@ -107,6 +109,20 @@ partial class frmMain
         btnPayroll.Cursor = Cursors.Hand;
         btnPayroll.Click += new System.EventHandler(btnPayroll_Click);
 
+        // ── Reports tile (row 2) ───────────────────────────────
+        btnReports.BackColor = Color.White;
+        btnReports.FlatAppearance.BorderColor = primaryBlue;
+        btnReports.FlatAppearance.BorderSize = 2;
+        btnReports.FlatStyle = FlatStyle.Flat;
+        btnReports.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        btnReports.ForeColor = primaryBlue;
+        btnReports.Location = new Point(25, 250);
+        btnReports.Size = new Size(210, 100);
+        btnReports.Text = "Reports";
+        btnReports.UseVisualStyleBackColor = false;
+        btnReports.Cursor = Cursors.Hand;
+        btnReports.Click += new System.EventHandler(btnReports_Click);
+
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize = false;
         lblFooter.Font = new Font("Segoe UI", 8F);
@@ -122,6 +138,7 @@ partial class frmMain
         BackColor = Color.FromArgb(245, 247, 250);
         ClientSize = new Size(820, 490);
         Controls.Add(lblFooter);
+        Controls.Add(btnReports);
         Controls.Add(btnPayroll);
         Controls.Add(btnAttendanceManagement);
         Controls.Add(btnEmployeeManagement);
