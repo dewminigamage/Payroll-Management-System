@@ -24,7 +24,6 @@ partial class frmReports
     private Label        lblPRStatus;
     private Panel        pnlPRBottom;
     private Button       btnExportPR;
-    private Button       btnNarrate;
     private Label        lblPRTotals;
     private DataGridView dgvPayrollReport;
 
@@ -51,19 +50,6 @@ partial class frmReports
     private Panel        pnlEmpBottom;
     private Button       btnExportEmp;
     private DataGridView dgvEmpReport;
-
-    // ── Tab 4: AI Anomaly Detection ────────────────────────────
-    private TabPage       tabAI;
-    private Panel         pnlAIFilter;
-    private Label         lblAIMonth;
-    private ComboBox      cmbAIMonth;
-    private Label         lblAIYear;
-    private NumericUpDown nudAIYear;
-    private Button        btnAnalyseAnomalies;
-    private Label         lblAIStatus;
-    private Panel         pnlAIBottom;
-    private Label         lblAINote;
-    private RichTextBox   rtbAnomalies;
 
     private Label        lblFooter;
 
@@ -95,7 +81,6 @@ partial class frmReports
         lblPRStatus      = new Label();
         pnlPRBottom      = new Panel();
         btnExportPR      = new Button();
-        btnNarrate       = new Button();
         lblPRTotals      = new Label();
         dgvPayrollReport = new DataGridView();
         tabAttendance    = new TabPage();
@@ -118,17 +103,6 @@ partial class frmReports
         pnlEmpBottom     = new Panel();
         btnExportEmp     = new Button();
         dgvEmpReport     = new DataGridView();
-        tabAI                = new TabPage();
-        pnlAIFilter          = new Panel();
-        lblAIMonth           = new Label();
-        cmbAIMonth           = new ComboBox();
-        lblAIYear            = new Label();
-        nudAIYear            = new NumericUpDown();
-        btnAnalyseAnomalies  = new Button();
-        lblAIStatus          = new Label();
-        pnlAIBottom          = new Panel();
-        lblAINote            = new Label();
-        rtbAnomalies         = new RichTextBox();
         lblFooter        = new Label();
 
         SuspendLayout();
@@ -160,7 +134,6 @@ partial class frmReports
         tabControl.TabPages.Add(tabPayroll);
         tabControl.TabPages.Add(tabAttendance);
         tabControl.TabPages.Add(tabEmployees);
-        tabControl.TabPages.Add(tabAI);
 
         // ── Tab 1: Payroll Summary ─────────────────────────────
         tabPayroll.Text      = "  Payroll Summary  ";
@@ -211,20 +184,16 @@ partial class frmReports
         pnlPRBottom.BackColor   = filterBg;
         pnlPRBottom.BorderStyle = BorderStyle.FixedSingle;
         pnlPRBottom.Controls.Add(btnExportPR);
-        pnlPRBottom.Controls.Add(btnNarrate);
         pnlPRBottom.Controls.Add(lblPRTotals);
 
         SetBtn(btnExportPR, "Export to CSV", 10, 8, 115, 28, Color.FromArgb(0, 140, 70), Color.White);
         btnExportPR.Click += new EventHandler(btnExportPR_Click);
 
-        SetBtn(btnNarrate, "Narrate Report", 136, 8, 128, 28, Color.FromArgb(90, 50, 160), Color.White);
-        btnNarrate.Click += new EventHandler(btnNarrate_Click);
-
         lblPRTotals.AutoSize  = false;
         lblPRTotals.Font      = new Font("Segoe UI", 9F, FontStyle.Bold);
         lblPRTotals.ForeColor = Color.FromArgb(0, 80, 160);
-        lblPRTotals.Location  = new Point(276, 13);
-        lblPRTotals.Size      = new Size(730, 18);
+        lblPRTotals.Location  = new Point(140, 13);
+        lblPRTotals.Size      = new Size(860, 18);
         lblPRTotals.Text      = "";
 
         SetupDgv(dgvPayrollReport, blue);
@@ -324,70 +293,6 @@ partial class frmReports
         btnExportEmp.Click += new EventHandler(btnExportEmp_Click);
 
         SetupDgv(dgvEmpReport, blue);
-
-        // ── Tab 4: AI Anomaly Detection ────────────────────────
-        tabAI.Text      = "  AI Anomaly Detection  ";
-        tabAI.BackColor = Color.White;
-        tabAI.Padding   = new Padding(4);
-        tabAI.Controls.Add(pnlAIFilter);
-        tabAI.Controls.Add(pnlAIBottom);
-        tabAI.Controls.Add(rtbAnomalies);
-
-        pnlAIFilter.Dock        = DockStyle.Top;
-        pnlAIFilter.Height      = 46;
-        pnlAIFilter.BackColor   = filterBg;
-        pnlAIFilter.BorderStyle = BorderStyle.FixedSingle;
-        pnlAIFilter.Controls.Add(lblAIMonth);
-        pnlAIFilter.Controls.Add(cmbAIMonth);
-        pnlAIFilter.Controls.Add(lblAIYear);
-        pnlAIFilter.Controls.Add(nudAIYear);
-        pnlAIFilter.Controls.Add(btnAnalyseAnomalies);
-        pnlAIFilter.Controls.Add(lblAIStatus);
-
-        SetLbl(lblAIMonth, "Month:", 10, 13);
-        cmbAIMonth.Location      = new Point(60, 10);
-        cmbAIMonth.Size          = new Size(115, 26);
-        cmbAIMonth.DropDownStyle = ComboBoxStyle.DropDownList;
-        cmbAIMonth.Items.AddRange(MonthItems());
-        cmbAIMonth.SelectedIndex = DateTime.Today.Month - 1;
-
-        SetLbl(lblAIYear, "Year:", 186, 13);
-        nudAIYear.Location      = new Point(222, 10);
-        nudAIYear.Size          = new Size(72, 26);
-        nudAIYear.Minimum       = 2000;
-        nudAIYear.Maximum       = 2099;
-        nudAIYear.Value         = DateTime.Today.Year;
-        nudAIYear.DecimalPlaces = 0;
-
-        SetBtn(btnAnalyseAnomalies, "Analyse Anomalies", 306, 9, 152, 28,
-            Color.FromArgb(180, 80, 0), Color.White);
-        btnAnalyseAnomalies.Click += new EventHandler(btnAnalyseAnomalies_Click);
-
-        lblAIStatus.AutoSize  = true;
-        lblAIStatus.Font      = new Font("Segoe UI", 9F, FontStyle.Italic);
-        lblAIStatus.ForeColor = Color.FromArgb(80, 80, 80);
-        lblAIStatus.Location  = new Point(472, 14);
-        lblAIStatus.Text      = "Select a month and click Analyse Anomalies.";
-
-        pnlAIBottom.Dock        = DockStyle.Bottom;
-        pnlAIBottom.Height      = 36;
-        pnlAIBottom.BackColor   = Color.FromArgb(255, 248, 235);
-        pnlAIBottom.BorderStyle = BorderStyle.FixedSingle;
-        pnlAIBottom.Controls.Add(lblAINote);
-
-        lblAINote.AutoSize  = false;
-        lblAINote.Font      = new Font("Segoe UI", 8.5F, FontStyle.Italic);
-        lblAINote.ForeColor = Color.FromArgb(140, 80, 0);
-        lblAINote.Location  = new Point(10, 10);
-        lblAINote.Size      = new Size(990, 16);
-        lblAINote.Text      = "Analysis powered by Groq / Gemini AI  —  configure your key in AI Payroll Assistant → Configure Key.";
-
-        rtbAnomalies.Dock        = DockStyle.Fill;
-        rtbAnomalies.BackColor   = Color.White;
-        rtbAnomalies.ReadOnly    = true;
-        rtbAnomalies.Font        = new Font("Segoe UI", 9.5F);
-        rtbAnomalies.ScrollBars  = RichTextBoxScrollBars.Vertical;
-        rtbAnomalies.BorderStyle = BorderStyle.None;
 
         // ── Footer ─────────────────────────────────────────────
         lblFooter.AutoSize  = false;
